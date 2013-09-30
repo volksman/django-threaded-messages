@@ -6,6 +6,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop
 from django.core.urlresolvers import reverse
@@ -110,8 +111,7 @@ def compose(request, recipient=None, form_class=ComposeForm,
         form = form_class(data=request.POST, recipient_filter=recipient_filter)
         if form.is_valid():
             form.save(sender=request.user)
-            request.user.message_set.create(
-                message=_(u"Message successfully sent."))
+            messages.success(request,_(u"Message successfully sent."))
             if success_url is None:
                 success_url = reverse('messages_inbox')
             if request.GET.has_key('next'):
