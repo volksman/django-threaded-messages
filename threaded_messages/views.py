@@ -153,7 +153,7 @@ def delete(request, thread_id, success_url=None):
     
     user_part.deleted_at = now
     user_part.save()
-    user.message_set.create(message=_(u"Conversation successfully deleted."))
+    messages.success(request,message=_(u"Conversation successfully deleted."))
     return HttpResponseRedirect(success_url)
 
 
@@ -174,7 +174,8 @@ def undelete(request, thread_id, success_url=None):
 
     user_part.deleted_at = now
     user_part.save()
-    user.message_set.create(message=_(u"Conversation successfully recovered."))
+
+    messages.success(request,message=_(u"Conversation successfully recovered."))
     return HttpResponseRedirect(success_url)
 
 @login_required
@@ -191,6 +192,7 @@ def view(request, thread_id, form_class=ReplyForm,
 
     user = request.user
     thread = get_object_or_404(Thread, id=thread_id)
+
   
     """
     Reply stuff
@@ -199,8 +201,7 @@ def view(request, thread_id, form_class=ReplyForm,
         form = form_class(request.POST)
         if form.is_valid():
             form.save(sender=user, thread=thread)
-            request.user.message_set.create(
-                message=_(u"Reply successfully sent."))
+            messages.success(request,message=_(u"Reply successfully sent."))
             if success_url is None:
                 success_url = reverse('messages_detail', args=(thread.id,))
             return HttpResponseRedirect(success_url)
